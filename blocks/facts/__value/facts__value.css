@@ -1,0 +1,12 @@
+.facts__value {
+  margin: 0;
+  padding: 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+
+.facts__value::before {
+  content: 'Значение операнда: ';
+  font-weight: bold;
+}

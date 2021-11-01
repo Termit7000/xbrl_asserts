@@ -1,0 +1,10 @@
+.segment {
+  list-style: none;
+  padding: 0;
+}
+
+.segment::before {
+  content: "Факты:";
+  font-weight: bold;
+  font-size: 18px;
+}

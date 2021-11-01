@@ -1,0 +1,14 @@
+.context {
+
+  padding: 0;
+  display: grid;
+
+  grid-template-columns: fit-content(55%) auto;
+  grid-auto-rows: 1.5em;
+  align-items: center;
+  gap: 8px 12px;
+
+  background-color: var(--detailed-data-color);
+
+  font-size: 14px;
+}

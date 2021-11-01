@@ -1,0 +1,9 @@
+.assert__operand {
+  background-color: var(--tooltip-background-color);
+  position: relative;
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1.7em;
+  padding-left: 6px;
+  padding-right: 6px;
+}

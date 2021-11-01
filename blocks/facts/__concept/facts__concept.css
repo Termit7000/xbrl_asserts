@@ -1,0 +1,10 @@
+.facts__concept {
+  margin: 0;
+  padding: 0;
+  padding-top: 12px;
+}
+
+.facts__concept::before{
+  content: 'Концепт: ';
+  font-weight: bold;
+}

@@ -1,0 +1,5 @@
+.accordion__button_active:after {
+  transform: rotate(-180deg);
+  transition: .3s;
+}
+

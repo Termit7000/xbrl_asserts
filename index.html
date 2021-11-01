@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./pages/assert.css">
+</head>
+
+<body>
+
+  <!--Карточка проверки-->
+  <template id="template_assert">
+    <article class="assert">
+      <h2 class="assert__title"></h2>
+      <p class="assert__description"></p>
+      <p class="assert__formula-description"></p>
+    </article>
+
+    <!-- Подсказки к операнду -->
+    <span class="assert__operand"> текстОперанда </span>
+
+    <!--Контейнер подсказок-->
+    <span class="assert__tooltip"> </span>
+
+    <span class="assert__tooltip-item">Подсказка операнда</span>
+  </template>
+
+  <!--Карточка сегмента-->
+  <template id="template_segment">
+
+    <ul class="segment assert__segment"></ul>
+
+    <li class="segment__item">
+
+      <!--Кастомное описание операнда если есть-->
+      <p class="segment__description"></p>
+
+      <div class="accordion">
+        <button type="button" class="accordion__button segment__button">
+          <p class="segment__value"></p>
+          <!--Значение сегмента-->
+        </button>
+        <div class="accordion__panel accordion__panel_active"> </div>
+      </div>
+    </li>
+  </template>
+
+  <!--Карточка операнда-->
+  <template id="template_operand">
+
+    <div class="operands"></div>
+
+    <div class="operand">
+      <p class="operand__title">INN_NFO</p>
+    </div>
+  </template>
+
+
+  <!-- Карточка фактов-->
+  <template id="template_facts">
+
+    <ul class="facts"></ul>
+
+    <li class="facts__item">
+      <!--Метка концепта-->
+      <p class="facts__concept"></p>
+
+      <!--Значение факта-->
+      <p class="facts__value"></p>
+
+    </li>
+  </template>
+
+  <!--Карточка контекста-->
+  <template id="template_context">
+    <div class="context facts__context"> </div>
+    <p class="context__aspect"></p>
+    <p class="context__value"></p>
+  </template>
+
+  <script src="./script.js"></script>
+  <script src="./data.js"></script>
+</body>
+
+</html>

@@ -20,16 +20,15 @@ function getJsonProperty(jsData, key) {
 /**
  * Вызывает переданную функцию через попытку, с обработкой ошибок
  * @param {Function} func
- * @param {JSON} jsObj
  * @param {Element} elem
  */
-function fillSafety(func, jsObj, elem) {
+function fillSafety(func, source, elem) {
 
   try {
-    func(jsObj);
+    func(source);
   }
   catch (er) {
-    const textError = er + "\n" + JSON.stringify(jsObj);
+    const textError = er + "\n" + JSON.stringify(source);
     renderError(elem, textError);
   }
 }
@@ -40,71 +39,111 @@ function fillSafety(func, jsObj, elem) {
  * @param {String} textError
  */
 function renderError(element, textError) {
-    console.log(textError);
-    element.textContent = textError;
-    element.classList.add('error');
+  console.log(textError);
+  element.textContent = textError;
+  element.classList.add('error');
+}
+
+/**
+ * Превращает переданный текст формулы в html с подсказками
+ */
+class Tooltip {
+
+  static templ = document.querySelector('#template_tooltip').content;
+
+  /**
+   *
+   * @param {String} formulaDescription
+   * @param {Array} arrayLabels
+   */
+  constructor(formulaDescription, arrayLabels, {operandName='operand', tooltipName='label', swap=false}={}) {
+
+    this.formulaDescription = formulaDescription;
+
+    if (Array.isArray(arrayLabels) && arrayLabels.length > 0) {
+
+      if (!arrayLabels[0].hasOwnProperty(tooltipName)) return;
+
+      this.labels = arrayLabels.map(i => {
+
+        const tooltip = Tooltip.templ.querySelector('.tooltip').cloneNode(true); //текст операнда
+        tooltip.textContent = (swap) ? i[tooltipName] : i[operandName];
+
+        const tooltipItem = Tooltip.templ.querySelector('.tooltip__item').cloneNode(true);
+        tooltipItem.textContent =  (swap) ? i[operandName] : i[tooltipName];
+
+        tooltip.append(tooltipItem);
+
+        return { name: `$${i[operandName]}`, tooltip: tooltip }
+
+      });
+    }
+  }
+
+  getFormulaHTML() {
+
+    if (!this.labels) return this.formulaDescription;
+
+    const result = this.labels.reduce(
+      (acc, item) => acc.replaceAll(item.name, item.tooltip.outerHTML), this.formulaDescription);
+
+    return result;
+  }
 }
 
 class Assert {
 
+  static templ = document.querySelector('#template_assert').content;
+
+  assert = Assert.templ.querySelector('.assert').cloneNode(true); //Карточка проверки
+  title = this.assert.querySelector('.assert__title');
+  description = this.assert.querySelector('.assert__description');
+
+  formulaWraper = this.assert.querySelector('.assert__formula-wraper');
+  formulaDescription = this.assert.querySelector('.assert__formula-description');
+
   constructor(jsObj) {
-    this.templ = document.querySelector('#template_assert').content;
-    this.assert = this.templ.querySelector('.assert').cloneNode(true); //Карточка проверки
-
-    this.title = this.assert.querySelector('.assert__title');
-    this.description = this.assert.querySelector('.assert__description');
-    this.formulaDescription = this.assert.querySelector('.assert__formula-description');
-
     fillSafety(this.fill.bind(this), jsObj, this.assert);
-
   }
 
   fill(jsAssert) {
+
     this.title.textContent = getJsonProperty(jsAssert, 'assertCode');
     this.description.textContent = getJsonProperty(jsAssert, 'assertDescription');
 
     //Подсказки к формуле
-    let formulaDescription = getJsonProperty(jsAssert, 'formulaDescription');
+    const operands = getJsonProperty(jsAssert, 'operands');
+    this.formulaDescription.innerHTML = new Tooltip(getJsonProperty(jsAssert, 'formulaDescription'), operands).getFormulaHTML();
 
-    jsAssert.operands.map(i => {
+    if (jsAssert.hasOwnProperty('formulaPrecondition')) {
 
-      const operand = this.templ.querySelector('.assert__operand').cloneNode(true);
-      operand.textContent = i.name;
+      const titlePrecondition = Assert.templ.querySelector('.assert__formula-title').cloneNode(true);
+      titlePrecondition.textContent = 'Условие проверки:';
 
-      const tooltip = this.templ.querySelector('.assert__tooltip').cloneNode(true);
-      i.labels.forEach(label => {
+      const formulaPrecondition = Assert.templ.querySelector('.assert__formula-description').cloneNode(true);
+      formulaPrecondition.innerHTML = new Tooltip(jsAssert.formulaPrecondition, operands).getFormulaHTML();
 
-        const tooltipItem = this.templ.querySelector('.assert__tooltip-item').cloneNode(true);
-        tooltipItem.textContent = label;
-        tooltip.append(tooltipItem);
-
-      });
-
-      operand.append(tooltip);
-      return { name: `$${i.name}`, tooltip: operand };
-
-    }).forEach(operand => {
-      formulaDescription = formulaDescription.replaceAll(operand.name, operand.tooltip.outerHTML);
-    });
-
-    this.formulaDescription.innerHTML = formulaDescription;
+      this.formulaWraper.prepend(formulaPrecondition);
+      this.formulaWraper.prepend(titlePrecondition);
+    }
 
     //Вставка сегментов
-    this.assert.append(new Segments(jsAssert.segments).getElement());
+    this.assert.append(new Segments(jsAssert.segments, jsAssert.formulaDescription).getElement());
   }
 
   getElement() { return this.assert };
 }
 
 class Segments {
-  constructor(jsObj) {
-    this.templ = document.querySelector('#template_segment').content;
-    this.segments = this.templ.querySelector('.segment').cloneNode(true); //Карточка сегмента
 
-    fillSafety(this.fill.bind(this), jsObj, this.segments);
+  static templ = document.querySelector('#template_segment').content;
+  segments = Segments.templ.querySelector('.segment').cloneNode(true); //Карточка сегмента
+
+  constructor(jsObj, formulaDescription) {
+    fillSafety(this.fill.bind(this, formulaDescription), jsObj, this.segments);
   }
 
-  fill(segments) {
+  fill(formulaDescription, segments) {
 
     if (!Array.isArray(segments)) {
       renderError(this.segments, `Переданный объект не является массивом: ${JSON.stringify(segments)}`);
@@ -112,7 +151,7 @@ class Segments {
     }
 
     segments.forEach(segment => {
-      const elementSegment = this.templ.querySelector('.segment__item').cloneNode(true);
+      const elementSegment = Segments.templ.querySelector('.segment__item').cloneNode(true);
       const description = elementSegment.querySelector('.segment__description');
 
       if (segment.hasOwnProperty('customDescription')) {
@@ -121,7 +160,16 @@ class Segments {
         elementSegment.remove(description);
       }
 
-      elementSegment.querySelector('.segment__value').textContent = getJsonProperty(segment, 'values');
+
+      const segmentValue = elementSegment.querySelector('.segment__value');
+      const values = getJsonProperty(segment, 'values');
+
+      if (Array.isArray(values)) {
+        segmentValue.innerHTML = new Tooltip(formulaDescription, values, {tooltipName: 'value', swap: true}).getFormulaHTML();
+      } else {
+        segmentValue.textContent = values;
+      }
+
 
       //ОПЕРАНДЫ
       elementSegment.append(new Operands(segment.operands).getElement());
@@ -130,7 +178,7 @@ class Segments {
     });
   }
 
-  getElement() { return this.segments};
+  getElement() { return this.segments };
 
 }
 
@@ -138,44 +186,44 @@ class Segments {
  * Карточка операнда
  */
 class Operands {
-    constructor(jsObj) {
 
-      this.templ = document.querySelector('#template_operand').content;
-      this.operands = this.templ.querySelector('.operands').cloneNode(true); //Карточки операндов
+  static templ = document.querySelector('#template_operand').content;
+  operands = Operands.templ.querySelector('.operands').cloneNode(true); //Карточки операндов
 
-      fillSafety(this.fill.bind(this), jsObj, this.operands);
+  constructor(jsObj) {
+     fillSafety(this.fill.bind(this), jsObj, this.operands);
+  }
+
+  fill(operandsJSON) {
+    if (!Array.isArray(operandsJSON)) {
+      renderError(this.operands, `Переданный объект не является массивом: ${JSON.stringify(operandsJSON)}`);
+      return;
     }
 
-    fill(operandsJSON) {
-      if (!Array.isArray(operandsJSON)) {
-        renderError(this.operands, `Переданный объект не является массивом: ${JSON.stringify(operandsJSON)}`);
-        return;
-      }
+    operandsJSON.forEach(operand => {
+      const operandElement = Operands.templ.querySelector('.operand').cloneNode(true);
+      operandElement.querySelector('.operand__title').textContent = getJsonProperty(operand, 'name');
 
-      operandsJSON.forEach(operand=>{
-        const operandElement = this.templ.querySelector('.operand').cloneNode(true);
-        operandElement.querySelector('.operand__title').textContent = getJsonProperty(operand, 'name');
+      //ФАКТЫ
+      operandElement.append(new Facts(operand.facts).getElement());
 
-        //ФАКТЫ
-        operandElement.append(new Facts(operand.facts).getElement());
+      this.operands.append(operandElement);
+    });
+  }
 
-        this.operands.append(operandElement);
-      });
-    }
-
-    getElement(){return this.operands};
+  getElement() { return this.operands };
 
 }
 
 /**
  * Карточка факта
  */
-class Facts{
-  constructor(jsObj){
+class Facts {
 
-    this.templ = document.querySelector('#template_facts').content;
-    this.facts = this.templ.querySelector('.facts').cloneNode(true); //Карточки фактов
+  static templ = document.querySelector('#template_facts').content;
+  facts = Facts.templ.querySelector('.facts').cloneNode(true); //Карточки фактов
 
+  constructor(jsObj) {
     fillSafety(this.fill.bind(this), jsObj, this.facts);
   }
 
@@ -185,14 +233,14 @@ class Facts{
       return;
     }
 
-    factsJSON.forEach(fact=>{
-      const factElement = this.templ.querySelector('.facts__item').cloneNode(true);
+    factsJSON.forEach(fact => {
+      const factElement = Facts.templ.querySelector('.facts__item').cloneNode(true);
       factElement.querySelector('.facts__concept').textContent = fact.conceptLabel;
 
       const decimals = (fact.decimals) ? `точность ${fact.decimals}` : '';
-      const curency = (fact.currency) ? fact.currency : '';
+      const currency = fact.currency ?? '';
 
-      factElement.querySelector('.facts__value').textContent = `${fact.value} ${decimals} ${curency}`;
+      factElement.querySelector('.facts__value').textContent = `${fact.value} ${decimals} ${currency}`;
 
       //КОНТЕКС
       factElement.append(new Context(fact.context).getElement());
@@ -202,16 +250,16 @@ class Facts{
     });
   }
 
-  getElement(){return this.facts};
+  getElement() { return this.facts };
 
 }
 
-class Context{
-  constructor(jsObj){
+class Context {
 
-    this.templ = document.querySelector('#template_context').content;
-    this.context = this.templ.querySelector('.context').cloneNode(true); //Карточки контекста
+  static templ = document.querySelector('#template_context').content;
+  context = Context.templ.querySelector('.context').cloneNode(true); //Карточки контекста
 
+  constructor(jsObj) {
     fillSafety(this.fill.bind(this), jsObj, this.context);
   }
 
@@ -222,78 +270,18 @@ class Context{
       return;
     }
 
-    contextJSON.forEach(item=>{
+    contextJSON.forEach(item => {
 
-      const aspect = this.templ.querySelector('.context__aspect').cloneNode(true);
+      const aspect = Context.templ.querySelector('.context__aspect').cloneNode(true);
       aspect.textContent = item.aspect;
       this.context.append(aspect);
 
-      const value = this.templ.querySelector('.context__value').cloneNode(true);
+      const value = Context.templ.querySelector('.context__value').cloneNode(true);
       value.textContent = item.value;
       this.context.append(value);
     });
 
   }
 
-  getElement(){return this.context};
+  getElement() { return this.context };
 }
-
-
-const jsnAssert = {
-  "assertCode": "valueAssertion_0420011_1_1",
-  "assertDescription": "0420011 Сведения об отчитывающейся организации. Значение по показателю «Идентификационный номер налогоплательщика (ИНН)» должно быть равно 10 цифрам.",
-  "formulaDescription": "matches(  $INN_NFO  /text(),'^[0-9]{10}$') ",
-  "status": {
-    "type": "warning",
-    "value": 1
-  },
-  "operands": [
-    {
-      "name": "INN_NFO",
-      "labels": [
-        "Идентификационный номер налогоплательщика (ИНН)"
-      ]
-    }
-  ],
-  "segments": [
-    {
-      "customDescription": "0420011 Сведения об отчитывающейся организации. Значение по показателю «Идентификационный номер налогоплательщика (ИНН)» должно быть равно 10 цифрам.",
-      "values": "matches(  324324234  /text(),'^[0-9]{10}$') ",
-      "operands": [
-        {
-          "name": "INN_NFO",
-          "facts": [
-            {
-              "conceptLabel": "Идентификационный номер налогоплательщика (ИНН)",
-              "value": "324324234",
-              "currency": null,
-              "decimals": null,
-              "context": [
-                {
-                  "aspect": "Контекст ID",
-                  "value": "A23"
-                },
-                {
-                  "aspect": "Организация",
-                  "value": "111111111111111"
-                },
-                {
-                  "aspect": "Период",
-                  "value": "2021-10-31"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-
-
-/*
-const assert = new Assert(jsnAssert);
-document.querySelector('body').append(assert.getElement());
-*/
-
-

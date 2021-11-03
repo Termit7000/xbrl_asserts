@@ -1,11 +1,5 @@
 .assert__formula-description {
   margin: 0;
   padding: 0;
-  font-size: 12px;
-  line-height: 1.2em;
 }
 
-.assert__formula-description::before {
-  content: 'Выражение: ';
-  font-weight: bold;
-}

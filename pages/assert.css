@@ -3,14 +3,14 @@
 @import url(../blocks/assert/assert.css);
 @import url(../blocks/assert/__title/assert__title.css);
 @import url(../blocks/assert/__description/assert__description.css);
+@import url(../blocks/assert/__formula-wraper/assert__formula-wraper.css);
+@import url(../blocks/assert/__formula-title/assert__formula-title.css);
 @import url(../blocks/assert/__formula-description/assert__formula-description.css);
-@import url(../blocks/assert/__operand/assert__operand.css);
-@import url(../blocks/assert/__tooltip/assert__tooltip.css);
-@import url(../blocks/assert/__tooltip-item/assert__tooltip-item.css);
 
 @import url(../blocks/assert/__segment/assert__segment.css);
 
-
+@import url(../blocks/tooltip/tooltip.css);
+@import url(../blocks/tooltip/__item/tooltip__item.css);
 
 
 @import url(../blocks/accordion/accordion.css);

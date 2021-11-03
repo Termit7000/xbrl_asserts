@@ -1,4 +1,4 @@
-.assert__tooltip {
+.tooltip__item {
   padding: 10px;
 
   position: absolute;
@@ -11,13 +11,10 @@
   margin-bottom: 8px;
   max-width: 200px;
   width: max-content;
+  min-width: 100%;
 
   background-color: var(--tooltip-background-color);
   color: var(--tooltip-text-color);
-
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 1.5em;
 
   border-radius: 4px;
   box-sizing: border-box;
@@ -31,12 +28,12 @@
   transition: opacity .3s ease-out;
 }
 
-.assert__operand:hover .assert__tooltip{
+.tooltip:hover .tooltip__item{
   visibility: visible;
   opacity: 1;
 }
 
-.assert__tooltip::after {
+.tooltip__item::after {
   content: " ";
   position: absolute;
   top: 100%;

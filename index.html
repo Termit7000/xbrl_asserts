@@ -11,21 +11,30 @@
 
 <body>
 
+
+  <template id="template_tooltip">
+
+    <!-- Подсказки к операнду -->
+    <span class="tooltip"> текстОперанда </span>
+
+    <!--Контейнер подсказок-->
+    <span class="tooltip__item">Текст подсказки операнда</span>
+
+  </template>
+
   <!--Карточка проверки-->
   <template id="template_assert">
     <article class="assert">
       <h2 class="assert__title"></h2>
       <p class="assert__description"></p>
-      <p class="assert__formula-description"></p>
+
+      <div class="assert__formula-wraper">
+        <p class="assert__formula-title">Выражение: </p>
+        <p class="assert__formula-description"></p>
+      </div>
     </article>
 
-    <!-- Подсказки к операнду -->
-    <span class="assert__operand"> текстОперанда </span>
 
-    <!--Контейнер подсказок-->
-    <span class="assert__tooltip"> </span>
-
-    <span class="assert__tooltip-item">Подсказка операнда</span>
   </template>
 
   <!--Карточка сегмента-->

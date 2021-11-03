@@ -1,0 +1,9 @@
+.assert__formula-wraper {
+  font-size: 14px;
+  line-height: 1.5em;
+
+  display: grid;
+  grid-template-columns: max-content auto;
+  align-items: center;
+  gap: 6px;
+}

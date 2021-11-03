@@ -115,7 +115,7 @@ class Assert {
     const operands = getJsonProperty(jsAssert, 'operands');
     this.formulaDescription.innerHTML = new Tooltip(getJsonProperty(jsAssert, 'formulaDescription'), operands).getFormulaHTML();
 
-    if (jsAssert.hasOwnProperty('formulaPrecondition')) {
+    if (jsAssert.hasOwnProperty('formulaPrecondition') && (jsAssert.formulaPrecondition) ) {
 
       const titlePrecondition = Assert.templ.querySelector('.assert__formula-title').cloneNode(true);
       titlePrecondition.textContent = 'Условие проверки:';
@@ -165,7 +165,7 @@ class Segments {
       const values = getJsonProperty(segment, 'values');
 
       if (Array.isArray(values)) {
-        segmentValue.innerHTML = new Tooltip(formulaDescription, values, {tooltipName: 'value', swap: true}).getFormulaHTML();
+        segmentValue.innerHTML = new Tooltip(formulaDescription, values, {operandName:'operand', tooltipName: 'value', swap: true}).getFormulaHTML();
       } else {
         segmentValue.textContent = values;
       }

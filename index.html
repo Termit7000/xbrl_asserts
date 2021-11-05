@@ -9,7 +9,34 @@
   <link rel="stylesheet" href="./pages/assert.css">
 </head>
 
-<body>
+<body class="page">
+
+  <div class="content">
+
+  </div>
+
+  <div class="color-input">
+
+
+
+    <div class="color-input__buttons">
+
+        <button type="button" class="color-input__button_type_save">Сохранить схему</button>
+        <button type="button" class="color-input__button_type_load">Загрузить схему</button>
+
+    </div>
+
+  </div>
+
+
+  <template id="color-inputs">
+
+    <label for="--main-color" class="color-input__label"> </label>
+
+    <input type="color" id="body" name="body" value="#D9B88F" class="color-input__item">
+
+
+  </template>
 
 
   <template id="template_tooltip">
@@ -90,7 +117,9 @@
     <p class="context__value"></p>
   </template>
 
+
   <script src="./script.js"></script>
+  <script src="./fontsInputs.js"></script>
   <script src="./data.js"></script>
 </body>
 

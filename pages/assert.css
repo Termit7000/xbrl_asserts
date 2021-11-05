@@ -1,3 +1,12 @@
+@import url(../blocks/root/root.css);
+
+@import url(../blocks/page/page.css);
+
+@import url(../blocks/content/content.css);
+
+@import url(../blocks/color-input/color-input.css);
+@import url(../blocks/color-input/__item/color-input__item.css);
+@import url(../blocks/color-input/__label/color-input__label.css);
 
 
 @import url(../blocks/assert/assert.css);

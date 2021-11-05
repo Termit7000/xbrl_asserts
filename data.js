@@ -1,4 +1,4 @@
-const body = document.querySelector('body');
+const body = document.querySelector('.content');
 
 fetch('./xbrl_validation.json').then(response => response.json()).then(
 	data => {

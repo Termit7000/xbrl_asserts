@@ -1,0 +1,7 @@
+.color-input {
+  grid-area: inputs;
+
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}

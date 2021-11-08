@@ -1,5 +1,7 @@
 .tooltip{
   background-color: var(--tooltip-operand-color);
+  color: var(--tooltip-operand-text-color);
+
   position: relative;
   display: inline-block;
   font-size: 14px;

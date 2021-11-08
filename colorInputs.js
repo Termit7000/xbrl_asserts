@@ -2,7 +2,7 @@
  * Список переменных CSS в :root
  */
 const arrVars = (function () {
-  const varsCSS = '--main-color: #D9B88F; --text-color: #324759; --tooltip-background-color: #F27C38; --tooltip-operand-color: #F27C38; --tooltip-text-color: #193C40; --secondary-color: #D99F59; --detailed-data-color: #D9CEBA;';
+  const varsCSS = '--main-color: #D9B88F; --text-color: #324759; --tooltip-background-color: #F27C38; --tooltip-operand-color: #F27C38; --tooltip-operand-text-color:  #193c40; --tooltip-text-color: #193C40; --secondary-color: #D99F59; --detailed-data-color: #D9CEBA;';
   //const varsCSS = Array.from(document.styleSheets[0].cssRules).filter(sheet => sheet.href === '../blocks/root/root.css')[0].styleSheet.cssRules[0].cssText;
   return varsCSS.replace(':root ', '').replace('{', '').replace('}', '')
     .split(';')

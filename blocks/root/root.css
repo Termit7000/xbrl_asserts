@@ -1,12 +1,12 @@
 :root {
 
-  --main-color: #D9B88F;
+  --main-color: #efe9cc;
   --text-color: #324759;
 
-  --tooltip-background-color:  #F27C38;
-  --tooltip-operand-color:  #F27C38;
-  --tooltip-text-color: #193C40;
+  --tooltip-background-color:  #f6cd90;
+  --tooltip-operand-color:  #f6cd90;
+  --tooltip-text-color: #193c40;
 
-  --secondary-color: #D99F59;
-  --detailed-data-color: #D9CEBA;
+  --secondary-color: #deb881;
+  --detailed-data-color: #eadea6;
 }
